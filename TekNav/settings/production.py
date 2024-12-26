@@ -1,6 +1,5 @@
 from .base import *
 
-# Production settings
 DEBUG = False
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS',

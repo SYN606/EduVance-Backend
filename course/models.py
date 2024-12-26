@@ -3,33 +3,16 @@ from django.utils.text import slugify
 
 
 class CourseCategory(models.Model):
-    COMPUTER_BASICS = 'CB'
-    WEB_DEVELOPMENT = 'WD'
-    CYBER_SECURITY = 'CS'
-    MECHANICAL_CIVIL_ENGINEERING = 'MCE'
-
-    CATEGORY_CHOICES = [
-        (COMPUTER_BASICS, 'Computer Basics'),
-        (WEB_DEVELOPMENT, 'Web Development'),
-        (CYBER_SECURITY, 'Cyber Security'),
-        (MECHANICAL_CIVIL_ENGINEERING, 'Mechanical and Civil Engineering'),
-    ]
-
-    name = models.CharField(
-        max_length=3,
-        choices=CATEGORY_CHOICES,
-        default=COMPUTER_BASICS,
-    )
+    name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(
-                self.get_name_display())  # Slug from the display name
+            self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return dict(self.CATEGORY_CHOICES).get(self.name, self.name)
+        return self.name
 
     class Meta:
         verbose_name = 'Course Category'
@@ -41,6 +24,7 @@ class Course(models.Model):
                                  on_delete=models.CASCADE,
                                  related_name='courses')
 
+    course_title = models.CharField(max_length=255)  # Field for course title
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
     duration = models.CharField(max_length=100)
@@ -59,11 +43,12 @@ class Course(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.description[:50])
+            self.slug = slugify(
+                self.course_title)  # Generate slug from course title
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.category.name} - {self.slug}"
+        return f"{self.category.name} - {self.course_title}"
 
     class Meta:
         verbose_name = 'Course'
