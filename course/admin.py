@@ -1,28 +1,16 @@
 from django.contrib import admin
-from .models import CourseCategory, Course
-from django.utils.html import mark_safe
+from .models import CourseCategory, CourseDetails
 
 
 @admin.register(CourseCategory)
 class CourseCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', )
-    search_fields = ('name', )
-    list_filter = ('name', )
+    list_display = ('name', 'slug')
+    readonly_fields = ('slug',)
 
 
-@admin.register(Course)
-class CourseAdmin(admin.ModelAdmin):
-    list_display = ('category', 'slug', 'description', 'duration',
-                    'main_image_preview')
-
-    def main_image_preview(self, obj):
-        return mark_safe(
-            f'<img src="{obj.main_image.url}" width="100" height="100" />'
-        ) if obj.main_image else "No image"
-
-    main_image_preview.short_description = 'Main Image'
-
-    search_fields = ('category__name', 'slug', 'description')
-    list_filter = ('category', )
-    prepopulated_fields = {'slug': ('description', )}
-    ordering = ('category', )
+@admin.register(CourseDetails)
+class CourseDetailsAdmin(admin.ModelAdmin):
+    list_display = ('course_title', 'category', 'slug', 'duration')
+    readonly_fields = ('slug',)
+    list_filter = ('category',)
+    search_fields = ('course_title', 'category__name')

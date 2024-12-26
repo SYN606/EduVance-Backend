@@ -1,20 +1,21 @@
 from rest_framework import serializers
-from .models import CourseCategory, Course
+from .models import CourseCategory, CourseDetails
+
+
+class CourseDetailsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CourseDetails
+        fields = [
+            'id', 'course_title', 'slug', 'main_image', 'additional_images',
+            'description', 'modules', 'duration', 'highlights'
+        ]
 
 
 class CourseCategorySerializer(serializers.ModelSerializer):
+    courses = CourseDetailsSerializer(many=True, read_only=True)
 
     class Meta:
         model = CourseCategory
-        fields = ['id', 'name', 'slug']
-
-
-class CourseSerializer(serializers.ModelSerializer):
-    category = CourseCategorySerializer()
-
-    class Meta:
-        model = Course
-        fields = [
-            'id', 'category', 'slug', 'description', 'duration', 'modules',
-            'additional_details', 'main_image', 'additional_images'
-        ]
+        fields = ['id', 'name', 'slug',
+                  'courses']  

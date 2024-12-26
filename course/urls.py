@@ -1,11 +1,21 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import CourseCategoryViewSet, CourseViewSet
+# course/urls.py
 
-router = DefaultRouter()
-router.register(r'course-categories', CourseCategoryViewSet)
-router.register(r'courses', CourseViewSet)
+from django.urls import path
+from .views import CourseCategoryListView, CourseCategoryDetailView, CourseDetailView
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    # List all categories with their courses
+    path('api/courses/',
+         CourseCategoryListView.as_view(),
+         name='course-category-list'),
+
+    # List courses under a specific category
+    path('api/courses/<str:category_slug>/',
+         CourseCategoryDetailView.as_view(),
+         name='course-category-detail'),
+
+    # Get full details of a specific course
+    path('api/courses/<str:category_slug>/<str:course_slug>/',
+         CourseDetailView.as_view(),
+         name='course-detail'),
 ]
