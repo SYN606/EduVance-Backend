@@ -17,7 +17,6 @@ staticfiles
 # Virtual environment
 venv/
 env/
-.env/
 
 # OS-specific files
 .DS_Store
@@ -33,3 +32,6 @@ coverage.xml
 # MySQL and PostgreSQL
 *.sql
 *.sqlite3
+
+# env files
+.env
