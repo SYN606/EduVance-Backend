@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth import authenticate
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,3 +21,21 @@ class UserSerializer(serializers.ModelSerializer):
                                         email=validated_data['email'],
                                         password=validated_data['password'])
         return user
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        username = data.get('username')
+        password = data.get('password')
+
+        # Authenticate the user
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            raise AuthenticationFailed('Invalid credentials')
+
+        data['user'] = user
+        return data
