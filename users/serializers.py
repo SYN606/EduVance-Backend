@@ -2,6 +2,11 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth import authenticate
+from rest_framework import serializers
+
+
+class OTPVerifySerializer(serializers.Serializer):
+    otp = serializers.CharField(max_length=6)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,15 +29,21 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField()
 
     def validate(self, data):
-        username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
 
-        # Authenticate the user
-        user = authenticate(username=username, password=password)
+        # Get the user with the provided email
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise AuthenticationFailed('Invalid credentials')
+
+        # Authenticate the user using their username and password
+        user = authenticate(username=user.username, password=password)
 
         if user is None:
             raise AuthenticationFailed('Invalid credentials')
